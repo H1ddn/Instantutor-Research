@@ -6,9 +6,6 @@ Created on Thu Jun 16 00:55:34 2022
 """
 import numpy as np
 
-# itertools used for test code
-#import itertools
-
 #user is an array of variables. Index 0 is the userID
 #db is an array of tutors, all tutors are arrays of variables, 
 #index 0 will always be that tutors userID

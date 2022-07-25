@@ -8,7 +8,7 @@ import numpy as np
 import json
 import cbModelPython as cb
 
-jdata = [json.loads(line) for line in open('users.json','r')]
+jdata = [json.loads(line) for line in open('profiles.json','r')]
 
 cleanData = []
 
