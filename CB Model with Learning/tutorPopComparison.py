@@ -5,14 +5,21 @@ Created on Fri Jul  1 14:14:38 2022
 @author: cruze6
 """
 
-import json
+from pymongo import MongoClient
 
 # Grabs all made requests and returns a dictionary including all requests in form
 # [state, tutor id, student id]
 # state refers to if the student selected the tutor or not. 'Requested' if true, 'Denied' if false.
 def getReqs():
-    jreq = [json.loads(line) for line in open('requests.json','r')]
-    juse = [json.loads(line) for line in open('users.json','r')]
+
+    # connect to MongoDB
+    client = MongoClient("mongodb+srv://Adm:instutor@cluster0.s0gxd.mongodb.net/?retryWrites=true&w=majority")
+
+    # enter the deployment's database
+    db = client['deployment']
+
+    # get users
+    cursor = list(db['users'].find())
 
     # The system currently works through a name / id basis
     # requests are related to names and ids. For the student
@@ -22,20 +29,23 @@ def getReqs():
     # then look for their user id in the users.json
     # this is something being fixed in the future
     users = {}
-    for user in juse:
-        users.append({user['name'] : user['$oid']})
+    for line in cursor:
+        users.append({line['name'] : line['$oid']})
 
     cleanData = []
 
-    for req in jreq:
-        for tutor in req['potential_tutors']:
+    # get requests
+    cursor = list(db['requests'].find())
+
+    for line in cursor:
+        for tutor in line['potential_tutors']:
             newBid = []
             if(tutor['state'] == 'SEND'):
                 newBid.append('Requested')
             else:
                 newBid.append('Denied')
             newBid.append(users[tutor['name']])
-            newBid.append(req['$oid'])
+            newBid.append(line['$oid'])
             cleanData.append(newBid)
     
     return(cleanData)

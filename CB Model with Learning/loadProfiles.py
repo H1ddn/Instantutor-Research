@@ -1,20 +1,27 @@
 import numpy as np
-import json
 import cbModelPython as cb
+from pymongo import MongoClient
 
 # Function loads the profiles.json into array
-def loadTut():
-    jdata = [json.loads(line) for line in open('profiles.json','r')]
+def loadProf():
+    # connect to MongoDB
+    client = MongoClient("mongodb+srv://Adm:instutor@cluster0.s0gxd.mongodb.net/?retryWrites=true&w=majority")
+
+    # enter the deployment's database
+    db = client['deployment']
+
+    # get profiles
+    cursor = list(db['profiles'].find())
 
     cleanData = []
 
-    for user in jdata:
+    for line in cursor:
         newUser = []
-        newUser.append(user['user']['$oid'])
-        newUser.append(user['degree'])
-        newUser.append(user['major'][0])
+        newUser.append(line['user']['$oid'])
+        newUser.append(line['degree'])
+        newUser.append(line['major'][0])
         courses = []
-        for expertise in user['expertise']:
+        for expertise in line['expertise']:
             for course in expertise['relatedCourses']:
                 courses.append(course)
         newUser.append(courses)
